@@ -1,3 +1,3 @@
 # Exodus releases
 
-Copyright 2021 Alberto Morón Hernández
+Copyright 2022 Alberto Morón Hernández
