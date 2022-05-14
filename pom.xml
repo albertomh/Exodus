@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Exodus Maven POM
+    Copyright 2022 Alberto Morón Hernández
+-->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.albertomh</groupId>
+    <artifactId>exodus</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <name>${project.groupId}:${project.artifactId}</name>
+    <description>Lightweight drop-in migrations for Spring.</description>
+    <url>https://github.com/albertomh/Exodus</url>
+
+    <properties>
+        <java.version>17</java.version>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
+    </properties>
+
+    <licenses>
+        <license>
+            <name>The MIT License</name>
+            <url>https://opensource.org/licenses/MIT</url>
+        </license>
+    </licenses>
+    <developers>
+        <developer>
+            <id>albertomh</id>
+            <name>Alberto Morón Hernández</name>
+        </developer>
+    </developers>
+    <scm>
+        <connection>scm:git:git@github.com:albertomh/Exodus.git</connection>
+        <developerConnection>scm:git:ssh://github.com:albertomh/Exodus.git</developerConnection>
+        <url>https://github.com/albertomh/Exodus/tree/main</url>
+    </scm>
+
+</project>
