@@ -3,10 +3,14 @@
  */
 package com.albertomh.exodus;
 
+import java.io.IOException;
+
 import org.springframework.stereotype.Component;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextStartedEvent;
 import org.springframework.core.io.Resource;
+import org.springframework.core.io.support.ResourcePatternResolver;
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 
 @Component
 class MigrationRunner implements ApplicationListener<ContextStartedEvent> {
@@ -18,6 +22,14 @@ class MigrationRunner implements ApplicationListener<ContextStartedEvent> {
      */
     public static Resource[] getMigrationScripts() {
         Resource[] sqlScripts = null;
+        try {
+            ClassLoader cl = MigrationRunner.class.getClassLoader();
+            ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver(cl);
+            sqlScripts = resolver.getResources("classpath:/db/migration/**/*.sql");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         return sqlScripts;
     }
 
