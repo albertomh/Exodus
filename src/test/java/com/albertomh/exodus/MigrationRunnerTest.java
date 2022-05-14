@@ -6,12 +6,13 @@ package com.albertomh.exodus;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
+import static org.junit.jupiter.api.Assertions.*;
 import org.springframework.context.event.ContextStartedEvent;
 import org.springframework.context.support.StaticApplicationContext;
+import org.springframework.core.io.Resource;
 
-import static org.junit.jupiter.api.Assertions.*;
 
 public class MigrationRunnerTest {
 
@@ -19,9 +20,19 @@ public class MigrationRunnerTest {
     
     MigrationRunner runner;
 
+    // ───── Test lifecycle ────────────────────────────────────────────────────
+
     @BeforeEach
     public void setUp() {
         System.setOut(new PrintStream(outputStreamCaptor));
+    }
+
+    // ───── Tests ─────────────────────────────────────────────────────────────
+
+    @Test
+    public void testGetMigrationScripts() {
+        Resource[] sqlScripts = MigrationRunner.getMigrationScripts();
+        assertEquals(1, sqlScripts.length);
     }
 
     @Test
