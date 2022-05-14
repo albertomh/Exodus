@@ -3,6 +3,11 @@
  */
 package com.albertomh.exodus;
 
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
+import javax.sql.DataSource;
+
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 
@@ -12,6 +17,8 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.springframework.context.event.ContextStartedEvent;
 import org.springframework.context.support.StaticApplicationContext;
 import org.springframework.core.io.Resource;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 
 
 public class MigrationRunnerTest {
@@ -19,6 +26,19 @@ public class MigrationRunnerTest {
     private final ByteArrayOutputStream outputStreamCaptor = new ByteArrayOutputStream();
     
     MigrationRunner runner;
+    private DataSource dataSource;
+    private Connection conn;
+    private Statement statement;
+
+    public MigrationRunnerTest() {
+        dataSource = new EmbeddedDatabaseBuilder().setType(EmbeddedDatabaseType.H2).build();
+        try {
+            conn = dataSource.getConnection();
+            statement = conn.createStatement();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 
     // ───── Test lifecycle ────────────────────────────────────────────────────
 
@@ -37,7 +57,7 @@ public class MigrationRunnerTest {
 
     @Test
     public void testCSETriggersRunner() {
-        runner = new MigrationRunner();
+        runner = new MigrationRunner(dataSource);
 
         StaticApplicationContext staticApplicationContext = new StaticApplicationContext();
         ContextStartedEvent cse = new ContextStartedEvent(staticApplicationContext);

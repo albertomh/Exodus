@@ -1,9 +1,10 @@
 # Exodus
 
-**Exodus** is a lightweight, drop-in migration runner for Spring.
+Exodus is a lightweight, drop-in migration runner for Spring.
 
 <p>
     <img id="badge--java" src="https://img.shields.io/badge/Java-17%2B-b07219" alt="Java17" />
+    <img id="badge--spring" src="https://img.shields.io/badge/Spring-5%2B-6db33f" alt="test coverage" />
     <img id="badge--tests" src="https://img.shields.io/badge/tests-100%25%20%E2%9C%94-brightgreen" alt="test coverage" />
     <img id="badge--version" src="https://img.shields.io/badge/version-0.0.1-white" alt="version" />
 </p>
@@ -13,7 +14,7 @@
 
 ### Testing
 
-Run tests with `./mvnw test`.
+Run the full suite of unit and integration tests by running `./mvnw test` from the project root.
 
 
 ---
