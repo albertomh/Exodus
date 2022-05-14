@@ -5,6 +5,11 @@ package com.albertomh.exodus;
 
 import java.io.IOException;
 
+import java.sql.Connection;
+import java.sql.Statement;
+import javax.sql.DataSource;
+import java.sql.SQLException;
+
 import org.springframework.stereotype.Component;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextStartedEvent;
@@ -14,6 +19,19 @@ import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 
 @Component
 class MigrationRunner implements ApplicationListener<ContextStartedEvent> {
+
+    private Connection conn;
+    private Statement statement;
+
+    MigrationRunner(DataSource dataSource) {
+        // Initialise database connection and statement.
+        try {
+            conn = dataSource.getConnection();
+            statement = conn.createStatement();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+    }
 
     /**
      * Fetch all SQL scripts under `/db/migration/`.
