@@ -20,7 +20,6 @@ import org.springframework.core.io.Resource;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 
-
 public class MigrationRunnerTest {
 
     private final ByteArrayOutputStream outputStreamCaptor = new ByteArrayOutputStream();
@@ -43,7 +42,13 @@ public class MigrationRunnerTest {
     // ───── Test lifecycle ────────────────────────────────────────────────────
 
     @BeforeEach
-    public void setUp() {
+    public void beforeEach() {
+        try {
+            statement.execute("DROP ALL OBJECTS;");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
         System.setOut(new PrintStream(outputStreamCaptor));
     }
 
