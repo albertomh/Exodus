@@ -7,7 +7,12 @@ import java.sql.Statement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public final class DatabaseUtils {
+
+    private static final Logger logger = LoggerFactory.getLogger(DatabaseUtils.class);
 
     private DatabaseUtils() { }
 
@@ -29,7 +34,7 @@ public final class DatabaseUtils {
                 tableCount = result.getInt("table_count");
             }
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
+            logger.error(e.getMessage());
         }
 
         return tableCount;

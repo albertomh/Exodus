@@ -10,6 +10,8 @@ import java.sql.Statement;
 import javax.sql.DataSource;
 import java.sql.SQLException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextStartedEvent;
@@ -20,6 +22,8 @@ import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 @Component
 class MigrationRunner implements ApplicationListener<ContextStartedEvent> {
 
+    Logger logger = LoggerFactory.getLogger(MigrationRunner.class);
+
     private Connection conn;
     private Statement statement;
 
@@ -29,7 +33,7 @@ class MigrationRunner implements ApplicationListener<ContextStartedEvent> {
             conn = dataSource.getConnection();
             statement = conn.createStatement();
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
+            logger.error(e.getMessage());
         }
     }
 
@@ -65,9 +69,9 @@ class MigrationRunner implements ApplicationListener<ContextStartedEvent> {
                 );
                 """;
             statement.execute(createMigrationsTableSQL);
-            System.out.println("exodus - Table `_schema_migration` has been created.");
+            logger.info("exodus - Table `_schema_migration` has been created.");
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
+            logger.error(e.getMessage());
         }
     }
 
@@ -78,7 +82,7 @@ class MigrationRunner implements ApplicationListener<ContextStartedEvent> {
      */
     @Override
     public void onApplicationEvent(ContextStartedEvent event) {
-        System.out.println("Runner triggered by CSE.");
+        logger.info("exodus - Runner triggered by CSE.");
     }
 
 }
