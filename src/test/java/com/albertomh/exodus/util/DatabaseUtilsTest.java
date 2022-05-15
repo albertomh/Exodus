@@ -9,10 +9,13 @@ import java.sql.Statement;
 import javax.sql.DataSource;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 @TestInstance(Lifecycle.PER_CLASS)
 public class DatabaseUtilsTest {
@@ -40,6 +43,13 @@ public class DatabaseUtilsTest {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    // ───── Tests ─────────────────────────────────────────────────────────────
+
+    @Test
+    public void testCountTablesWithEmptyDB() {
+        assertEquals(0, DatabaseUtils.countTables(statement));
     }
 
 }
