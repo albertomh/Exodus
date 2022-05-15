@@ -20,6 +20,8 @@ import org.springframework.core.io.Resource;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 
+import com.albertomh.exodus.util.DatabaseUtils;
+
 public class MigrationRunnerTest {
 
     private final ByteArrayOutputStream outputStreamCaptor = new ByteArrayOutputStream();
@@ -58,6 +60,15 @@ public class MigrationRunnerTest {
     public void testGetMigrationScripts() {
         Resource[] sqlScripts = MigrationRunner.getMigrationScripts();
         assertEquals(1, sqlScripts.length);
+    }
+
+    @Test
+    public void testInitialisingTheSchemaMigrationTable() {
+        runner = new MigrationRunner(dataSource);
+
+        assertEquals(0, DatabaseUtils.countTables(statement));
+        runner.initialiseSchemaMigrationTable();
+        assertEquals(1, DatabaseUtils.countTables(statement));
     }
 
     @Test
