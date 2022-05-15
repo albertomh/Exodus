@@ -63,11 +63,11 @@ public class MigrationRunnerTest {
     }
 
     @Test
-    public void testInitialisingTheSchemaMigrationTable() {
+    public void testCreatingTheSchemaMigrationTable() {
         runner = new MigrationRunner(dataSource);
 
         assertEquals(0, DatabaseUtils.countTables(statement));
-        runner.initialiseSchemaMigrationTable();
+        runner.createSchemaMigrationTable();
         assertEquals(1, DatabaseUtils.countTables(statement));
     }
 

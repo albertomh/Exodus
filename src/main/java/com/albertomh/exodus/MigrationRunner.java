@@ -52,6 +52,26 @@ class MigrationRunner implements ApplicationListener<ContextStartedEvent> {
     }
 
     /**
+     * Create the `_schema_migration` table if it does not yet exist.
+     */
+    public void createSchemaMigrationTable() {
+        try {
+            String createMigrationsTableSQL = """
+                CREATE TABLE IF NOT EXISTS _schema_migration (
+                    id SERIAL PRIMARY KEY,
+                    applied_at TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL,
+                    name VARCHAR(255) NOT NULL UNIQUE,
+                    checksum TEXT NOT NULL
+                );
+                """;
+            statement.execute(createMigrationsTableSQL);
+            System.out.println("exodus - Table `_schema_migration` has been created.");
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    /**
      * Find any unapplied migrations on start-up and apply them.
      * 
      * @param event
