@@ -12,10 +12,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
+import static org.junit.jupiter.api.Assertions.*;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 
-import static org.junit.jupiter.api.Assertions.*;
+import com.albertomh.exodus.TestingUtils;
 
 @TestInstance(Lifecycle.PER_CLASS)
 public class DatabaseUtilsTest {
@@ -50,6 +51,13 @@ public class DatabaseUtilsTest {
     @Test
     public void testCountTablesWithEmptyDB() {
         assertEquals(0, DatabaseUtils.countTables(statement));
+    }
+
+    @Test
+    public void testCountTablesWithOneTable() {
+        TestingUtils.createSchemaMigrationTable(statement);
+
+        assertEquals(1, DatabaseUtils.countTables(statement));
     }
 
 }
