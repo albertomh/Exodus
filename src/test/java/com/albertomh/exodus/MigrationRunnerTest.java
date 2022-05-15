@@ -7,9 +7,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 import javax.sql.DataSource;
-
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
@@ -20,16 +18,22 @@ import org.springframework.core.io.Resource;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 
+import org.slf4j.LoggerFactory;
+import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.core.read.ListAppender;
+
 import com.albertomh.exodus.util.DatabaseUtils;
 
 public class MigrationRunnerTest {
 
-    private final ByteArrayOutputStream outputStreamCaptor = new ByteArrayOutputStream();
-    
     MigrationRunner runner;
     private DataSource dataSource;
     private Connection conn;
     private Statement statement;
+
+    Logger logger = (Logger) LoggerFactory.getLogger(MigrationRunner.class);
+    List<ILoggingEvent> logList;
 
     public MigrationRunnerTest() {
         dataSource = new EmbeddedDatabaseBuilder().setType(EmbeddedDatabaseType.H2).build();
@@ -51,7 +55,11 @@ public class MigrationRunnerTest {
             e.printStackTrace();
         }
 
-        System.setOut(new PrintStream(outputStreamCaptor));
+        logger.detachAndStopAllAppenders();
+        ListAppender<ILoggingEvent> listAppender = new ListAppender<>();
+        logger.addAppender(listAppender);
+        listAppender.start();
+        logList = listAppender.list;
     }
 
     // ───── Tests ─────────────────────────────────────────────────────────────
@@ -79,7 +87,8 @@ public class MigrationRunnerTest {
         ContextStartedEvent cse = new ContextStartedEvent(staticApplicationContext);
 
         runner.onApplicationEvent(cse);
-        assertEquals("Runner triggered by CSE.", outputStreamCaptor.toString().trim());
+        assertEquals(1, logList.size());
+        assertEquals("exodus - Runner triggered by CSE.", logList.get(0).getMessage());
     }
 
 }
