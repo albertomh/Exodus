@@ -45,6 +45,13 @@ public class MigrationRunnerTest {
         }
     }
 
+    // ───── Utilities ─────────────────────────────────────────────────────────
+
+    private ContextStartedEvent generateContextStartedEvent() {
+        StaticApplicationContext staticApplicationContext = new StaticApplicationContext();
+        return new ContextStartedEvent(staticApplicationContext);
+    }
+
     // ───── Test lifecycle ────────────────────────────────────────────────────
 
     @BeforeEach
@@ -83,10 +90,7 @@ public class MigrationRunnerTest {
     public void testCSETriggersRunner() {
         runner = new MigrationRunner(dataSource);
 
-        StaticApplicationContext staticApplicationContext = new StaticApplicationContext();
-        ContextStartedEvent cse = new ContextStartedEvent(staticApplicationContext);
-
-        runner.onApplicationEvent(cse);
+        runner.onApplicationEvent(generateContextStartedEvent());
         assertEquals(1, logList.size());
         assertEquals("exodus - Runner triggered by CSE.", logList.get(0).getMessage());
     }
