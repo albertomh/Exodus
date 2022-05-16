@@ -3,14 +3,18 @@
  */
 package com.albertomh.exodus;
 
+import java.util.UUID;
 import java.sql.SQLException;
 import java.sql.Statement;
 
 
 public class TestingUtils {
 
-    public static void createSchemaMigrationTable(Statement statement) {
+    public static String generateRandomString() {
+        return UUID.randomUUID().toString().replace("-", "");
+    }
 
+    public static void createSchemaMigrationTable(Statement statement) {
         try {
             String tableSchema = """
                 CREATE TABLE IF NOT EXISTS _schema_migration (
@@ -23,6 +27,22 @@ public class TestingUtils {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    public static void addRowToSchemaMigrationTable(Statement statement, String migrationFilename) {
+        try {
+            String tableSchema = String.format(
+                "INSERT INTO _schema_migration (name, checksum) VALUES ('%s', '%s');",
+                migrationFilename, generateRandomString()
+            );
+            statement.execute(tableSchema);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void addRowToSchemaMigrationTable(Statement statement) {
+        addRowToSchemaMigrationTable(statement, generateRandomString());
     }
 
 }
