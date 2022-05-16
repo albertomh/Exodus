@@ -3,12 +3,17 @@
  */
 package com.albertomh.exodus.util;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.sql.Statement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.io.Resource;
+import org.springframework.util.DigestUtils;
 
 public final class DatabaseUtils {
 
@@ -43,7 +48,18 @@ public final class DatabaseUtils {
     /**
      *
      */
-    public static void applyMigration() {
+    public static void applyMigration(Resource script) {
+        // Generate an MD5 digest to uniquely identify each migration script.
+        String scriptDigest = "";
+        try {
+            File file = script.getFile();
+            byte[] scriptBytes = Files.readAllBytes(file.toPath());
+            scriptDigest = DigestUtils.md5DigestAsHex(scriptBytes).toUpperCase();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        // TODO: Apply the migration script and update `_schema_migration`.
     }
 
 }
