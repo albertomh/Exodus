@@ -19,6 +19,8 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.ResourcePatternResolver;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 
+import com.albertomh.exodus.util.DatabaseUtils;
+
 @Component
 class MigrationRunner implements ApplicationListener<ContextStartedEvent> {
 
@@ -82,6 +84,12 @@ class MigrationRunner implements ApplicationListener<ContextStartedEvent> {
      */
     @Override
     public void onApplicationEvent(ContextStartedEvent event) {
+        // Initialise the `_schema_migration` table the first time Exodus runs.
+        Integer tableCount = DatabaseUtils.countTables(statement);
+        if (tableCount == 0) {
+            createSchemaMigrationTable();
+        }
+
         logger.info("exodus - Runner triggered by CSE.");
     }
 
