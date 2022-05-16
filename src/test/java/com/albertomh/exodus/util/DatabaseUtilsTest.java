@@ -64,6 +64,22 @@ public class DatabaseUtilsTest {
     }
 
     @Test
+    public void testlistAppliedMigrationsForEmptyDB() {
+        TestingUtils.createSchemaMigrationTable(statement);
+
+        assertEquals(0, DatabaseUtils.listAppliedMigrations(statement).size());
+    }
+
+    @Test
+    public void testlistAppliedMigrationsAfterMigrationsRun() {
+        TestingUtils.createSchemaMigrationTable(statement);
+        TestingUtils.addRowToSchemaMigrationTable(statement);
+        TestingUtils.addRowToSchemaMigrationTable(statement);
+
+        assertEquals(2, DatabaseUtils.listAppliedMigrations(statement).size());
+    }
+
+    @Test
     public void testApplyMigration() {
         TestingUtils.createSchemaMigrationTable(statement);
         assertEquals(1, DatabaseUtils.countTables(statement));

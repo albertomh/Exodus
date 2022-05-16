@@ -3,6 +3,7 @@
  */
 package com.albertomh.exodus.util;
 
+import java.util.ArrayList;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -48,7 +49,19 @@ public final class DatabaseUtils {
     }
 
     /**
+     * @return An array of filenames of migrations that have been applied.
+     */
+    public static ArrayList<String> listAppliedMigrations(Statement statement) {
+        ArrayList<String> appliedMigrations = new ArrayList<>();
+        return appliedMigrations;
+    }
+
+    /**
+     * Apply the given migration, recording this in `_schema_migration`.
      *
+     * @param conn
+     * @param statement
+     * @param script The migration SQL script to apply.
      */
     public static void applyMigration(Connection conn, Statement statement, Resource script) {
         // Generate an MD5 digest to uniquely identify each migration script.
