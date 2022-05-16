@@ -87,12 +87,16 @@ public class MigrationRunnerTest {
     }
 
     @Test
-    public void testCSETriggersRunner() {
+    public void testCSETriggersMigrationsWithBlankDatabase() {
         runner = new MigrationRunner(dataSource);
 
+        assertEquals(0, DatabaseUtils.countTables(statement));
         runner.onApplicationEvent(generateContextStartedEvent());
-        assertEquals(1, logList.size());
-        assertEquals("exodus - Runner triggered by CSE.", logList.get(0).getMessage());
+        assertEquals(1, DatabaseUtils.countTables(statement));
+
+        assertEquals(2, logList.size());
+        assertEquals("exodus - Table `_schema_migration` has been created.", logList.get(0).getMessage());
+        assertEquals("exodus - Runner triggered by CSE.", logList.get(1).getMessage());
     }
 
 }
