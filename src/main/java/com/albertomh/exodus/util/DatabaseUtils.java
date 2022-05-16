@@ -40,4 +40,10 @@ public final class DatabaseUtils {
         return tableCount;
     }
 
+    /**
+     *
+     */
+    public static void applyMigration() {
+    }
+
 }
