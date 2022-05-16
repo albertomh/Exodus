@@ -6,6 +6,7 @@ package com.albertomh.exodus.util;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.sql.Connection;
 import java.sql.Statement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -13,6 +14,7 @@ import java.sql.SQLException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
+import org.springframework.jdbc.datasource.init.ScriptUtils;
 import org.springframework.util.DigestUtils;
 
 public final class DatabaseUtils {
@@ -48,7 +50,7 @@ public final class DatabaseUtils {
     /**
      *
      */
-    public static void applyMigration(Resource script) {
+    public static void applyMigration(Connection conn, Statement statement, Resource script) {
         // Generate an MD5 digest to uniquely identify each migration script.
         String scriptDigest = "";
         try {
@@ -59,7 +61,17 @@ public final class DatabaseUtils {
             e.printStackTrace();
         }
 
-        // TODO: Apply the migration script and update `_schema_migration`.
+        // Apply the migration script and update `_schema_migration`.
+        try {
+            ScriptUtils.executeSqlScript(conn, script);
+
+            String updateSQL = "INSERT INTO _schema_migration(name, checksum) "
+                    .concat(String.format("VALUES ('%s','%s');", script.getFilename(), scriptDigest));
+            statement.executeUpdate(updateSQL);
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
 }

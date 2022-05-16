@@ -69,7 +69,7 @@ public class DatabaseUtilsTest {
         assertEquals(1, DatabaseUtils.countTables(statement));
 
         Resource migrationFile = new ClassPathResource("db/migration/test_migration.sql");
-        DatabaseUtils.applyMigration(migrationFile);
+        DatabaseUtils.applyMigration(conn, statement, migrationFile);
         assertEquals(2, DatabaseUtils.countTables(statement));
     }
 
