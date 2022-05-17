@@ -53,6 +53,21 @@ public final class DatabaseUtils {
      */
     public static ArrayList<String> listAppliedMigrations(Statement statement) {
         ArrayList<String> appliedMigrations = new ArrayList<>();
+
+        Integer tableCount = DatabaseUtils.countTables(statement);
+
+        if (tableCount > 0) {
+            try {
+                String existingMigrationsSQL = "SELECT m.name FROM _schema_migration m;";
+                ResultSet existingMigrations = statement.executeQuery(existingMigrationsSQL);
+                while (existingMigrations.next()) {
+                    appliedMigrations.add(existingMigrations.getString("name"));
+                }
+            } catch (SQLException e) {
+                logger.error(e.getMessage());
+            }
+        }
+
         return appliedMigrations;
     }
 
