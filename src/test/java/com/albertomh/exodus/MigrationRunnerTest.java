@@ -97,9 +97,10 @@ public class MigrationRunnerTest {
         runner.onApplicationEvent(generateContextStartedEvent());
         assertEquals(2, DatabaseUtils.countTables(statement));
 
-        assertEquals(2, logList.size());
+        assertEquals(3, logList.size());
         assertEquals("exodus - Table `_schema_migration` has been created.", logList.get(0).getMessage());
         assertEquals("exodus - Migration `test_migration.sql` has been applied.", logList.get(1).getMessage());
+        assertEquals("exodus - Ignored [0] existing migrations. Applied [1] new migrations.", logList.get(2).getMessage());
     }
 
 }
