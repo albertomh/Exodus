@@ -93,6 +93,8 @@ class MigrationRunner implements ApplicationListener<ContextStartedEvent> {
         Resource[] sqlScripts = getMigrationScripts();
 
         // Loop over every SQL script and apply those that have not already been applied.
+        Integer existingMigrationsCount = 0;
+        Integer newMigrationsCount = 0;
         if (sqlScripts != null && conn != null && statement != null) {
             ArrayList<String> appliedMigrations = DatabaseUtils.listAppliedMigrations(statement);
 
@@ -101,11 +103,20 @@ class MigrationRunner implements ApplicationListener<ContextStartedEvent> {
                     || appliedMigrations.size() == 0
                     || (appliedMigrations.size() > 0 && !appliedMigrations.contains(script.getFilename()))) {
                     DatabaseUtils.applyMigration(conn, statement, script);
+                    newMigrationsCount++;
                     logger.info(String.format("exodus - Migration `%s` has been applied.", script.getFilename()));
+                } else {
+                    existingMigrationsCount++;
                 }
             }
         }
 
+        try {
+            logger.info(String.format("exodus - Ignored [%d] existing migrations. Applied [%d] new migrations.", existingMigrationsCount, newMigrationsCount));
+            conn.close();
+        } catch (SQLException e) {
+            logger.error(e.getMessage());
+        }
     }
 
 }
