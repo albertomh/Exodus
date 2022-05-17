@@ -3,8 +3,8 @@
  */
 package com.albertomh.exodus;
 
+import java.util.ArrayList;
 import java.io.IOException;
-
 import java.sql.Connection;
 import java.sql.Statement;
 import javax.sql.DataSource;
@@ -90,7 +90,22 @@ class MigrationRunner implements ApplicationListener<ContextStartedEvent> {
             createSchemaMigrationTable();
         }
 
-        logger.info("exodus - Runner triggered by CSE.");
+        Resource[] sqlScripts = getMigrationScripts();
+
+        // Loop over every SQL script and apply those that have not already been applied.
+        if (sqlScripts != null && conn != null && statement != null) {
+            ArrayList<String> appliedMigrations = DatabaseUtils.listAppliedMigrations(statement);
+
+            for (Resource script : sqlScripts) {
+                if (appliedMigrations == null
+                    || appliedMigrations.size() == 0
+                    || (appliedMigrations.size() > 0 && !appliedMigrations.contains(script.getFilename()))) {
+                    DatabaseUtils.applyMigration(conn, statement, script);
+                    logger.info(String.format("exodus - Migration `%s` has been applied.", script.getFilename()));
+                }
+            }
+        }
+
     }
 
 }
