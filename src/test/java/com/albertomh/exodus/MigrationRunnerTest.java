@@ -19,6 +19,7 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 
 import org.slf4j.LoggerFactory;
+import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.read.ListAppender;
@@ -84,6 +85,8 @@ public class MigrationRunnerTest {
         assertEquals(0, DatabaseUtils.countTables(statement));
         runner.createSchemaMigrationTable();
         assertEquals(1, DatabaseUtils.countTables(statement));
+        assertEquals("exodus - Table `_schema_migration` has been created.", logList.get(0).getMessage());
+        assertEquals(Level.INFO, logList.get(0).getLevel());
     }
 
     @Test

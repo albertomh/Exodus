@@ -87,6 +87,7 @@ public class DatabaseUtilsTest {
         Resource migrationFile = new ClassPathResource("db/migration/test_migration.sql");
         DatabaseUtils.applyMigration(conn, statement, migrationFile);
         assertEquals(2, DatabaseUtils.countTables(statement));
+        assertEquals(1, DatabaseUtils.listAppliedMigrations(statement).size());
     }
 
 }
