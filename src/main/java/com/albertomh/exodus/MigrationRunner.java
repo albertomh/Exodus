@@ -112,8 +112,17 @@ class MigrationRunner implements ApplicationListener<ContextStartedEvent> {
         }
 
         try {
-            logger.info(String.format("exodus - Ignored [%d] existing migrations. Applied [%d] new migrations.", existingMigrationsCount, newMigrationsCount));
+            String existingMigPhrase = existingMigrationsCount == 1
+                ? "existing migration"
+                : "existing migrations";
+            String newMigPhrase = newMigrationsCount == 1
+                ? "new migration"
+                : "new migrations";
+            logger.info(String.format("exodus - Ignored [%d] %s. Applied [%d] %s.",
+                existingMigrationsCount, existingMigPhrase,
+                newMigrationsCount, newMigPhrase));
             conn.close();
+
         } catch (SQLException e) {
             logger.error(e.getMessage());
         }
