@@ -95,11 +95,11 @@ public class MigrationRunnerTest {
 
         assertEquals(0, DatabaseUtils.countTables(statement));
         runner.onApplicationEvent(generateContextStartedEvent());
-        assertEquals(1, DatabaseUtils.countTables(statement));
+        assertEquals(2, DatabaseUtils.countTables(statement));
 
         assertEquals(2, logList.size());
         assertEquals("exodus - Table `_schema_migration` has been created.", logList.get(0).getMessage());
-        assertEquals("exodus - Runner triggered by CSE.", logList.get(1).getMessage());
+        assertEquals("exodus - Migration `test_migration.sql` has been applied.", logList.get(1).getMessage());
     }
 
 }
