@@ -3,11 +3,13 @@
  */
 package com.albertomh.exodus;
 
+import java.util.List;
+import java.util.ArrayList;
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import javax.sql.DataSource;
-import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
@@ -75,7 +77,7 @@ public class MigrationRunnerTest {
     @Test
     public void testGetMigrationScripts() {
         Resource[] sqlScripts = MigrationRunner.getMigrationScripts();
-        assertEquals(1, sqlScripts.length);
+        assertEquals(2, sqlScripts.length);
     }
 
     @Test
@@ -97,10 +99,11 @@ public class MigrationRunnerTest {
         runner.onApplicationEvent(generateContextStartedEvent());
         assertEquals(2, DatabaseUtils.countTables(statement));
 
-        assertEquals(3, logList.size());
+        assertEquals(4, logList.size());
         assertEquals("exodus - Table `_schema_migration` has been created.", logList.get(0).getMessage());
-        assertEquals("exodus - Migration `test_migration.sql` has been applied.", logList.get(1).getMessage());
-        assertEquals("exodus - Ignored [0] existing migrations. Applied [1] new migration.", logList.get(2).getMessage());
+        assertEquals("exodus - Migration `already_applied_migration.sql` has been applied.", logList.get(1).getMessage());
+        assertEquals("exodus - Migration `test_migration.sql` has been applied.", logList.get(2).getMessage());
+        assertEquals("exodus - Ignored [0] existing migrations. Applied [2] new migrations.", logList.get(3).getMessage());
     }
 
 }
