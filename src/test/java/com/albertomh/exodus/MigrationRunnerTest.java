@@ -122,4 +122,24 @@ public class MigrationRunnerTest {
         assertEquals("exodus - Ignored [1] existing migration. Applied [1] new migration.", logList.get(1).getMessage());
     }
 
+    @Test
+    public void testMigrationsAreRecordedInMigrationsTable() {
+        TestingUtils.createSchemaMigrationTable(statement);
+        TestingUtils.addRowToSchemaMigrationTable(statement, "already_applied_migration.sql");
+
+        runner = new MigrationRunner(dataSource);
+        runner.onApplicationEvent(generateContextStartedEvent());
+
+        try {
+            ArrayList<String> migrationFilenames = new ArrayList<>();
+            ResultSet result = statement.executeQuery("SELECT * FROM _schema_migration;");
+            while (result.next()) {
+                migrationFilenames.add(result.getString("name"));
+            }
+            assertEquals("already_applied_migration.sql, test_migration.sql", String.join(", ", migrationFilenames));
+        } catch (SQLException e) {
+            logger.error(e.getMessage());
+        }
+    }
+
 }
