@@ -106,4 +106,16 @@ public class MigrationRunnerTest {
         assertEquals("exodus - Ignored [0] existing migrations. Applied [2] new migrations.", logList.get(3).getMessage());
     }
 
+    @Test
+    public void testCSETriggersMigrationsWithPopulatedDatabase() {
+        TestingUtils.createSchemaMigrationTable(statement);
+        TestingUtils.addRowToSchemaMigrationTable(statement, "already_applied_migration.sql");
+
+        runner = new MigrationRunner(dataSource);
+
+        assertEquals(1, DatabaseUtils.countTables(statement));
+        runner.onApplicationEvent(generateContextStartedEvent());
+        assertEquals(2, DatabaseUtils.countTables(statement));
+    }
+
 }
