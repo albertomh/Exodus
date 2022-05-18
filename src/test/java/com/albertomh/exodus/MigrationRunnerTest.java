@@ -12,6 +12,8 @@ import java.sql.Statement;
 import javax.sql.DataSource;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.junit.jupiter.api.BeforeEach;
 import static org.junit.jupiter.api.Assertions.*;
 import org.springframework.context.event.ContextStartedEvent;
@@ -19,7 +21,6 @@ import org.springframework.context.support.StaticApplicationContext;
 import org.springframework.core.io.Resource;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
-
 import org.slf4j.LoggerFactory;
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
@@ -28,6 +29,7 @@ import ch.qos.logback.core.read.ListAppender;
 
 import com.albertomh.exodus.util.DatabaseUtils;
 
+@TestInstance(Lifecycle.PER_CLASS)
 public class MigrationRunnerTest {
 
     MigrationRunner runner;
@@ -58,7 +60,7 @@ public class MigrationRunnerTest {
     // ───── Test lifecycle ────────────────────────────────────────────────────
 
     @BeforeEach
-    public void beforeEach() {
+    private void beforeEach() {
         try {
             statement.execute("DROP ALL OBJECTS;");
         } catch (SQLException e) {
