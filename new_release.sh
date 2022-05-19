@@ -27,6 +27,12 @@ get_version() {
     fi
 }
 
+package_release() {
+    printf "\nPackaging into 'dist/exodus-$VERSION.jar'\n\n"
+    ./mvnw --quiet clean package
+    cp ./target/*.jar ./dist
+}
+
 # Badges:  version
 set_badges_in_readme() {
     printf "\nSetting badges in README.\n"
@@ -39,6 +45,11 @@ set_badges_in_readme() {
     printf "    Set badge ( version | ${VERSION} )\n"
 }
 
+cleanup() {
+    printf "\nRemoving '/target'\n"
+    rm -rf "$ROOT_DIR/target/"
+}
+
 # ─────────────────────────────────────────────────────────────────────────────
 
 VERSION=""
@@ -48,8 +59,12 @@ main() {
 
     get_version
 
+    package_release
+
     set_badges_in_readme
 
-    printf "─────────────────────── END ───────────────────────\n\n"
+    cleanup
+
+    printf "\n─────────────────────── END ───────────────────────\n\n"
 }
 main
