@@ -1,6 +1,8 @@
-# Exodus
-
-Exodus is a lightweight, drop-in migration runner for Spring.
+<p align="center">
+    <img src="docs/exodus.svg" alt="Exodus" height="120"/>
+    <br>
+    Exodus is a lightweight, drop-in migration runner for Spring.
+</p>
 
 <p>
     <img id="badge--java" src="https://img.shields.io/badge/Java-17%2B-b07219" alt="Java17" />
