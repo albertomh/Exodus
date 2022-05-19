@@ -27,6 +27,18 @@ get_version() {
     fi
 }
 
+# Badges:  version
+set_badges_in_readme() {
+    printf "\nSetting badges in README.\n"
+    local readme_path="$ROOT_DIR/README.md"
+
+    # Set version badge.
+    local version_badge_re='\/badge\/version.+?white'
+    local new_version_badge="\/badge\/version-${VERSION}-white"
+    sed -i -E "s/$version_badge_re/$new_version_badge/g" "$readme_path"
+    printf "    Set badge ( version | ${VERSION} )\n"
+}
+
 # ─────────────────────────────────────────────────────────────────────────────
 
 VERSION=""
@@ -35,6 +47,8 @@ main() {
     printf "\n──────────── BEGIN NEW_RELEASE SCRIPT ─────────────\n"
 
     get_version
+
+    set_badges_in_readme
 
     printf "─────────────────────── END ───────────────────────\n\n"
 }
