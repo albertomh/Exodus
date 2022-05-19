@@ -11,35 +11,49 @@
     <img id="badge--version" src="https://img.shields.io/badge/version-1.0.0-white" alt="version" />
 </p>
 
+Exodus' aim is not to compete with more mature migration runners in terms of features, but rather the opposite: to remove complexity and offer a light, simple solution to migrations in Spring applications.
+
 
 ## Use Exodus in a Spring project
+1. Download the latest `exodus.jar` from [`dist/`](dist) above and place this JAR in your Spring project's `src/main/resources/lib/` directory.
+2. Add Exodus as a dependency in your POM, taking care to set the version property as appropriate:
+```
+<dependency>
+    <groupId>com.albertomh</groupId>
+    <artifactId>exodus</artifactId>
+    <version>1.0.0</version>
+    <scope>system</scope>
+    <systemPath>${basedir}/src/main/resources/lib/exodus-1.0.0.jar</systemPath>
+</dependency>
+```
+3. Using the [sample application entrypoint](docs/SampleApplicationEntrypoint.java) as a guide, do the following:
+    - Pass `scanBasePackages = {"com.albertomh.exodus"}` as a parameter to the `@SpringBootApplication` decorator.
+    - Instantiate an application context with: `SpringApplication.run(YourApplication.class, args)`.
+    - Call `applicationContext.start()` inside `main()` to emit a `ContextStartedEvent`. This is the cue for Exodus to run any pending migrations.
 
-1. Download the latest `exodus.jar` from the [`/dist`](dist) directory.
-2. Add this JAR under `src/main/resources/lib` in your Spring project.
-3. Add the following lines to your application's entrypoint:
-    1. Pass `scanBasePackages = {"com.albertomh.exodus"}` as a parameter to the `@SpringBootApplication` decorator.
-    2. Instantiate an application context with: `SpringApplication.run(YourApplication.class, args)`.
-    3. Call `applicationContext.start()` inside `main()` to emit a `ContextStartedEvent`. This is the cue for Exodus to run any pending migrations.
+These three steps are all that is needed to add Exodus to a project — you can now start writing migrations.
 
-Use the [sample application entrypoint](docs/SampleApplicationEntrypoint.java) as a guide to have Exodus run migrations on startup for your Spring project.
+
+### Writing migrations
+Exodus will pick up any `.sql` files you place under `src/main/resources/db/migration/` in your Spring application.  
+The following two best practices are recommended (but not enforced by Exodus):
+- Further subdivide `db/migrations/` into directories named after the year the migrations they hold were written in.
+- Have migrations follow the naming convention `YYYY-MM-DD_HH.MM__<MODULE>__<CHANGE>.sql` where `<MODULE>` is a subdivision of your app's functionality and `<CHANGE>` is a concise summary of the change enacted by the migration. For instance: `1970-01-01_09.00__auth__create-user.sql`.
 
 
 ## Develop
 
 ### Build
-
 Build with `./mvnw clean package`. This will create a JAR under `target/`.  
 JARs should be placed under `dist/` for new releases — avoid doing this manually and instead run the `new_release.sh` script that takes care of this and other release-time tasks for you.
 
 
 ### Testing
-
 Tests are located under `src/test` and laid out in the way common to Java projects, replicating the file structure of the application source code. 
 Verify any changes you make by running `./mvnw test` (suite of unit & integration tests) from the project root.
 
 
 ### Cutting a release
-
 1. Merge all changes into the `main` branch and update the `<version>` property in the POM.
 2. Run `new_release.sh` to run all tests, create a new JAR & place this in `/dist`, and update README badges.
 3. Commit the new JAR, tag the new release in git, and push to origin.
