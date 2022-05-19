@@ -1,5 +1,5 @@
 <p align="center">
-    <img src="docs/exodus.svg" alt="Exodus" height="120"/>
+    <img src="docs/exodus.svg" alt="Exodus" height="142"/>
     <br>
     Exodus is a lightweight, drop-in migration runner for Spring.
 </p>
@@ -12,11 +12,16 @@
 </p>
 
 
-## Developing
+## Use Exodus in a Spring project
 
-### Testing
+1. Download the latest `exodus.jar` from the [`/dist`](dist) directory.
+2. Add this JAR under `src/main/resources/lib` in your Spring project.
+3. Add the following lines to your application's entrypoint:
+    1. Pass `scanBasePackages = {"com.albertomh.exodus"}` as a parameter to the `@SpringBootApplication` decorator.
+    2. Instantiate an application context with: `SpringApplication.run(YourApplication.class, args)`
+    3. Call `applicationContext.start()` inside `main()` to emit a `ContextStartedEvent` which is picked up by Exodus and used as the cue to run any pending migrations.
 
-Run the full suite of unit and integration tests by running `./mvnw test` from the project root.
+[Click here](docs/SampleApplicationEntrypoint.java) to see a sample Spring application entrypoint configured to have Exodus run migrations on startup.
 
 
 ---
