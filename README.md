@@ -26,7 +26,19 @@ Use the [sample application entrypoint](docs/SampleApplicationEntrypoint.java) a
 
 ## Develop
 
-## Cutting a release
+### Build
+
+Build with `./mvnw clean package`. This will create a JAR under `target/`.  
+JARs should be placed under `dist/` for new releases — avoid doing this manually and instead run the `new_release.sh` script that takes care of this and other release-time tasks for you.
+
+
+### Testing
+
+Tests are located under `src/test` and laid out in the way common to Java projects, replicating the file structure of the application source code. 
+Verify any changes you make by running `./mvnw test` (suite of unit & integration tests) from the project root.
+
+
+### Cutting a release
 
 1. Merge all changes into the `main` branch and update the `<version>` property in the POM.
 2. Run `new_release.sh` to run all tests, create a new JAR & place this in `/dist`, and update README badges.
