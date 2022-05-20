@@ -9,7 +9,7 @@
 
     <groupId>com.albertomh</groupId>
     <artifactId>exodus</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>1.0.0</version>
     <name>${project.groupId}:${project.artifactId}</name>
     <description>Lightweight drop-in migrations for Spring.</description>
     <url>https://github.com/albertomh/Exodus</url>
@@ -51,12 +51,6 @@
             <version>2.6.7</version>
             <scope>compile</scope>
         </dependency>
-        <dependency>
-            <groupId>commons-codec</groupId>
-            <artifactId>commons-codec</artifactId>
-            <version>1.15</version>
-        </dependency>
-
 
         <dependency>
             <groupId>com.h2database</groupId>
@@ -80,6 +74,29 @@
 
     <build>
         <plugins>
+            <!-- Was used to build an uberJAR containing `org.apache.commons.codec.digest.DigestUtils`.
+                Have switched to using `org.springframework.util.DigestUtils`. -->
+            <!--plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.3.0</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <artifactSet>
+                                <includes>
+                                    <include>commons-codec:*</include>
+                                </includes>
+                            </artifactSet>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin-->
+
             <plugin>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>2.22.0</version>
