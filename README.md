@@ -11,7 +11,7 @@
     <img id="badge--version" src="https://img.shields.io/badge/version-0.0.1-white" alt="version" />
 </p>
 
-Exodus' aim is not to compete with more mature migration runners in terms of features, but rather the opposite: to remove complexity and offer a light, simple solution to migrations in Spring applications.
+Exodus' aim is not to compete with incumbent migration runners on number of features, but rather to remove bloat and offer a lightweight (~7 kb), simple solution to migrations in Spring applications.
 
 
 ## Use Exodus in a Spring project
@@ -106,8 +106,8 @@ A collection of utilities to interact with the database (or rather the `DataSour
 ### Tests
 #### TestingUtils
 This module provides utilities used exclusively by the test suite.
-- `createSchemaMigrationTable` creates the `_schema_migration` table as part of setting up unit tests so that they don't depend on the same functionality implemented in the `MigrationRunner`.
-- `addRowToSchemaMigrationTable` simulates the behaviour of the runner by appending a row with arbitrary data to the `_schema_migration` table.
+- `createSchemaMigrationTable()` creates the `_schema_migration` table as part of setting up unit tests so that they don't depend on the same functionality implemented in the `MigrationRunner`.
+- `addRowToSchemaMigrationTable()` simulates the behaviour of the runner by appending a row with arbitrary data to the `_schema_migration` table.
 
 #### MigrationRunnerTest
 A suite of tests targetting Exodus' main loop. A utility creates synthetic `ContextStartedEvent`s to simulate a Spring application's starting up.  
@@ -118,7 +118,7 @@ A suite of tests targetting the `DatabaseUtils` tools. Unit tests verify simple 
 
 **For both test suites:**
 - The constructor sets up a new ephemeral H2 datasource, connection, and statement.
-- `beforeEach` drops all objects in the H2 test database between tests to make them independent of each other.
+- `beforeEach()` drops all objects in the H2 test database between tests to make them independent of each other.
 
 
 #### Test resources
