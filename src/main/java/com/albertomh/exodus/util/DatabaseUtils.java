@@ -58,10 +58,10 @@ public final class DatabaseUtils {
 
         if (tableCount > 0) {
             try {
-                String existingMigrationsSQL = "SELECT m.name FROM _schema_migration m;";
+                String existingMigrationsSQL = "SELECT m.file_name FROM _schema_migration m;";
                 ResultSet existingMigrations = statement.executeQuery(existingMigrationsSQL);
                 while (existingMigrations.next()) {
-                    appliedMigrations.add(existingMigrations.getString("name"));
+                    appliedMigrations.add(existingMigrations.getString("file_name"));
                 }
             } catch (SQLException e) {
                 logger.error(e.getMessage());
@@ -93,7 +93,7 @@ public final class DatabaseUtils {
         try {
             ScriptUtils.executeSqlScript(conn, script);
 
-            String updateSQL = "INSERT INTO _schema_migration(name, checksum) "
+            String updateSQL = "INSERT INTO _schema_migration(file_name, checksum) "
                     .concat(String.format("VALUES ('%s','%s');", script.getFilename(), scriptDigest));
             statement.executeUpdate(updateSQL);
 

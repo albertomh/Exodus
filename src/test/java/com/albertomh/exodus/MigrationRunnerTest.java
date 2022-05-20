@@ -137,7 +137,7 @@ public class MigrationRunnerTest {
             ArrayList<String> migrationChecksums = new ArrayList<>();
             ResultSet result = statement.executeQuery("SELECT * FROM _schema_migration;");
             while (result.next()) {
-                migrationFilenames.add(result.getString("name"));
+                migrationFilenames.add(result.getString("file_name"));
                 migrationChecksums.add(result.getString("checksum"));
             }
             assertEquals("already_applied_migration.sql, test_migration.sql", String.join(", ", migrationFilenames));

@@ -66,8 +66,8 @@ class MigrationRunner implements ApplicationListener<ContextStartedEvent> {
                 CREATE TABLE IF NOT EXISTS _schema_migration (
                     id SERIAL PRIMARY KEY,
                     applied_at TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL,
-                    name VARCHAR(255) NOT NULL UNIQUE,
-                    checksum TEXT NOT NULL
+                    file_name VARCHAR(255) NOT NULL UNIQUE,
+                    checksum VARCHAR(128) NOT NULL
                 );
                 """;
             statement.execute(createMigrationsTableSQL);

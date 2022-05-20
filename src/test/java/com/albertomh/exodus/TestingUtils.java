@@ -20,7 +20,7 @@ public class TestingUtils {
                 CREATE TABLE IF NOT EXISTS _schema_migration (
                     id SERIAL PRIMARY KEY,
                     applied_at TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL,
-                    name TEXT NOT NULL,
+                    file_name TEXT NOT NULL,
                     checksum TEXT NOT NULL
                 );""";
             statement.execute(tableSchema);
@@ -32,7 +32,7 @@ public class TestingUtils {
     public static void addRowToSchemaMigrationTable(Statement statement, String migrationFilename) {
         try {
             String tableSchema = String.format(
-                "INSERT INTO _schema_migration (name, checksum) VALUES ('%s', '%s');",
+                "INSERT INTO _schema_migration (file_name, checksum) VALUES ('%s', '%s');",
                 migrationFilename, generateRandomString()
             );
             statement.execute(tableSchema);
