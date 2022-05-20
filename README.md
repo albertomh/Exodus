@@ -1,7 +1,7 @@
 <p align="center">
     <img src="docs/exodus.svg" alt="Exodus" height="142"/>
     <br>
-    Exodus is a lightweight, drop-in migration runner for Spring.
+    Exodus is a light, drop-in migration runner for Spring.
 </p>
 
 <p>
@@ -12,7 +12,7 @@
     <img id="badge--version" src="https://img.shields.io/badge/version-1.0.0-white" alt="version" />
 </p>
 
-Exodus' aim is not to compete with incumbent migration runners on number of features, but rather to remove bloat and offer a light (~7 kb), simple solution to migrations in Spring applications.
+Exodus' aim is not to compete with incumbent migration runners on number of features, but rather to remove bloat and offer a simple solution to migrations in Spring applications.
 
 
 ## Use Exodus in a Spring project
@@ -29,7 +29,7 @@ Exodus' aim is not to compete with incumbent migration runners on number of feat
 ```
 3. Using the [sample application entrypoint](docs/SampleApplicationEntrypoint.java) as a guide, do the following:
     - Pass `scanBasePackages = {"com.albertomh.exodus"}` as a parameter to the `@SpringBootApplication` decorator.
-    - Instantiate an application context with: `SpringApplication.run(YourApplication.class, args)`.
+    - Instantiate an application context with `SpringApplication.run(YourApplication.class, args)`.
     - Call `applicationContext.start()` inside `main()` to emit a `ContextStartedEvent`. This is the cue for Exodus to run any pending migrations.
 
 These three steps are all that is needed to add Exodus to a project — you can now start writing migrations.
@@ -52,7 +52,7 @@ Exodus will create the table `_schema_migration` to keep track of the migrations
 | ----------- | ----------- | -------------- | -------------- | 
 | `SERIAL PK` | `TIMESTAMP` | `VARCHAR(255)` | `VARCHAR(128)` |
 
-If a valid migration is found within `db/migrations` (at any depth, see above) `_schema_migration` will be queried. If the migration is not listed in this table it will be applied and the following logged to the console:
+If a valid migration is found within `db/migrations/` (at any depth, see above) `_schema_migration` will be queried. If the migration is not listed in this table it will be applied and the following logged to the console:
 ```
 | exodus - Migration `1970-01-01_09.00__auth__create-user.sql` has been applied.
 ```
@@ -71,13 +71,13 @@ JARs should be placed under `dist/` for new releases — avoid doing this manual
 
 
 ### Testing
-Tests are located under `src/test` and laid out in the way common to Java projects, replicating the file structure of the application source code. 
+Tests are located under `src/test/` and laid out in the way common to Java projects, replicating the file structure of the application source code. 
 Verify any changes you make by running `./mvnw test` (suite of unit & integration tests) from the project root.
 
 
 ### Cutting a release
 1. Merge all changes into the `main` branch and update the `<version>` property in the POM.
-2. Run `new_release.sh`. This will run all tests, create a new JAR & place it in `/dist`, and update README badges.
+2. Run `new_release.sh`. This will run all tests, create a new JAR & place it in `dist/`, and update README badges.
 3. Commit the new JAR and update `RELEASES.md`.
 4. Tag the new release in git and push to origin.
 
@@ -86,23 +86,23 @@ Verify any changes you make by running `./mvnw test` (suite of unit & integratio
 
 ### Dependencies
 Exodus makes use of components in `org.springframework.core`, `o.s.context`, `o.s.util`, and `o.s.jdbc`.  
-At compile time these are provided by dependencies on `spring-boot-starter-web` & `spring-boot-starter-data-jpa`.  
-At runtime these are **not** provided as part of an uberJAR since Exodus is designed to be a dependency of a Spring application and as such will make use of the Spring libraries available in its runtime context.
+At compile-time these are provided by the `spring-boot-starter-web` & `spring-boot-starter-data-jpa` libraries.  
+At run-time these are **not** provided as part of an uberJAR since Exodus is designed to be a dependency of a Spring application and as such will make use of the Spring libraries available in its run-time context.
 
 In a test context two further dependencies — `spring-boot-starter-test` & the `H2` database — are required. The former provides testing libraries such as JUnit5, while the latter is an in-memory database used to quickly build and tear down databases during unit and integration testing.
 
 
 ### Entrypoint
 #### MigrationRunner
-- A datasource is injected into the constructor and this sets up a connection and statement for use throughout the Exodus instance's lifetime.
+- A datasource is injected into `MigrationRunner`'s constructor and this sets up a connection and statement for use throughout the Exodus instance's lifetime.
 - `getMigrationScripts()` fetches migration scripts from the resources directory.
-- `createSchemaMigrationTable()` creates the `_schema_migration` if one does not already exist.
-- `onApplicationEvent()` is Exodus' main loop, invoked when a `ContextStartedEvent` is emitted by the Spring application on startup. It will create the table in which migrations are recorded, loop through every migration script and assess whether it needs to be applied, and log appropriate messages to the console.
+- `createSchemaMigrationTable()` creates the `_schema_migration` table if one does not already exist.
+- `onApplicationEvent()` is Exodus' main loop, invoked when a `ContextStartedEvent` is emitted by the Spring application on startup. It will create the table in which migrations are recorded, loop through every migration script & assess whether it needs to be applied, and log appropriate messages to the console.
 
 
 ### Utilities
 #### DatabaseUtils
-A collection of utilities to interact with the database (or rather the `DataSource` injected into the `MigrationRunner`). Provides ways to inspect the tables in the database, list applied migrations, and apply a pending migration.
+A collection of utilities to interact with the database (more accurately, the `DataSource` injected into the `MigrationRunner`). Provides ways to inspect the tables in the database, list applied migrations, and apply a pending migration.
 
 
 ### Tests
@@ -112,21 +112,21 @@ This module provides utilities used exclusively by the test suite.
 - `addRowToSchemaMigrationTable()` simulates the behaviour of the runner by appending a row with arbitrary data to the `_schema_migration` table.
 
 #### MigrationRunnerTest
-A suite of tests targetting Exodus' main loop. A utility creates synthetic `ContextStartedEvent`s to simulate a Spring application's starting up.  
+A suite of tests for Exodus' main loop. A utility creates synthetic `ContextStartedEvent`s to simulate a Spring application's starting up.  
 Unit tests check methods that fetch migration scripts from the resources directory or create the `_schema_migration` table. Integration tests assess the main loop's functionality under different conditions (blank database, previously-applied migrations, etc.).
 
 #### DatabaseUtilsTest
-A suite of tests targetting the `DatabaseUtils` tools. Unit tests verify simple functions such as counting the number of tables or listing the applied migrations. Integration tests check the functionality of more complex procedures such as applying a migration.
+A suite of tests for the `DatabaseUtils` tools. Unit tests verify simple functions such as counting the number of tables or listing applied migrations. Integration tests check the functionality of more complex procedures such as applying a migration.
 
 **For both test suites:**
-- The constructor sets up a new ephemeral H2 datasource, connection, and statement.
-- `beforeEach()` drops all objects in the H2 test database between tests to make them independent of each other.
+- The constructor sets up a new ephemeral H2 datasource, connection, and statement when a suite is instantiated.
+- `beforeEach()` drops all objects in the H2 test database to make each test independent.
 
 
 #### Test resources
 Test resources are provided under `src/test/resources/db/migration/`, mimicking their location in a production application using Exodus. Two migrations are provided:
-- `test_migration.sql` a straightforward script creating a basic `auth__user` table.
-- `already_applied_migration.sql` an inert migration used to test Exodus' behaviour when it skips over an already-applied migration.
+- `test_migration.sql` a simple script that creates a basic `auth__user` table.
+- `already_applied_migration.sql` an inert migration used to test Exodus' handling of an already-applied migration.
 
 
 ---
