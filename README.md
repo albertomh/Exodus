@@ -38,7 +38,7 @@ These three steps are all that is needed to add Exodus to a project — you can 
 ### Writing migrations
 Exodus will pick up any `.sql` files you place under `src/main/resources/db/migration/` in your Spring application.  
 The following two best practices are recommended (but not enforced by Exodus):
-- Subdivide `db/migrations/` into directories named after the year the migrations they hold were written in.
+- Subdivide `db/migration/` into directories named after the year the migrations they hold were written in.
 - Have migrations follow the naming convention `YYYY-MM-DD_HH.MM__<MODULE>__<CHANGE>.sql` where `<MODULE>` is a subdivision of your app's functionality and `<CHANGE>` is a concise summary of the change enacted by the migration. For instance: `1970-01-01_09.00__auth__create-user.sql`.
 
 
@@ -52,7 +52,7 @@ Exodus will create the table `_schema_migration` to keep track of the migrations
 | ----------- | ----------- | -------------- | -------------- | 
 | `SERIAL PK` | `TIMESTAMP` | `VARCHAR(255)` | `VARCHAR(128)` |
 
-If a valid migration is found within `db/migrations/` (at any depth, see above) `_schema_migration` will be queried. If the migration is not listed in this table it will be applied and the following logged to the console:
+If a valid migration is found within `db/migration/` (at any depth, see above) `_schema_migration` will be queried. If the migration is not listed in this table it will be applied and the following logged to the console:
 ```
 | exodus - Migration `1970-01-01_09.00__auth__create-user.sql` has been applied.
 ```
