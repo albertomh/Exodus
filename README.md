@@ -9,7 +9,7 @@
     <img id="badge--spring" src="https://img.shields.io/badge/Spring-5%2B-6db33f" alt="test coverage" />
     <img id="badge--tests" src="https://img.shields.io/badge/tests-100%25%20%E2%9C%94-brightgreen" alt="test coverage" />
     <img id="badge--size" src="https://img.shields.io/badge/JAR%20size-~7%20kb-blueviolet" alt="size" />
-    <img id="badge--version" src="https://img.shields.io/badge/version-1.0.0-white" alt="version" />
+    <img id="badge--version" src="https://img.shields.io/badge/version-1.0.1-white" alt="version" />
 </p>
 
 Exodus' aim is not to compete with incumbent migration runners on number of features, but rather to remove bloat and offer a simple solution to migrations in Spring applications.

@@ -1,3 +1,7 @@
+### 1.0.1
+2022-06-25
+- Make `MigrationRunner` public to allow use in application tests.
+
 ### 1.0.0
 2022-05-20  
 **MVP release**  
