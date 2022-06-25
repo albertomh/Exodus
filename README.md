@@ -35,7 +35,7 @@ Exodus' aim is not to compete with incumbent migration runners on number of feat
 These three steps are all that is needed to add Exodus to a project — you can now start writing migrations.
 
 
-### Writing migrations
+### Write migrations
 Exodus will pick up any `.sql` files you place under `src/main/resources/db/migration/` in your Spring application.  
 The following two best practices are recommended (but not enforced by Exodus):
 - Subdivide `db/migration/` into directories named after the year the migrations they hold were written in.
@@ -70,12 +70,12 @@ Build Exodus with `./mvnw clean package`. This will create a JAR under `target/`
 JARs should be placed under `dist/` for new releases — avoid doing this manually and instead run the `new_release.sh` script that takes care of this and other release-time tasks for you.
 
 
-### Testing
+### Test
 Tests are located under `src/test/` and laid out in the way common to Java projects, replicating the file structure of the application source code. 
 Verify any changes you make by running `./mvnw test` (suite of unit & integration tests) from the project root.
 
 
-### Cutting a release
+### Cut a release
 1. Merge all changes into the `main` branch and update the `<version>` property in the POM.
 2. Run `new_release.sh`. This will run all tests, create a new JAR & place it in `dist/`, and update README badges.
 3. Commit the new JAR and update `RELEASES.md`.

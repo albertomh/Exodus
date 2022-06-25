@@ -22,7 +22,7 @@ import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import com.albertomh.exodus.util.DatabaseUtils;
 
 @Component
-class MigrationRunner implements ApplicationListener<ContextStartedEvent> {
+public class MigrationRunner implements ApplicationListener<ContextStartedEvent> {
 
     Logger logger = LoggerFactory.getLogger(MigrationRunner.class);
 
