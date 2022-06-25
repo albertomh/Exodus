@@ -29,7 +29,7 @@ public class MigrationRunner implements ApplicationListener<ContextStartedEvent>
     private Connection conn;
     private Statement statement;
 
-    MigrationRunner(DataSource dataSource) {
+    public MigrationRunner(DataSource dataSource) {
         // Initialise database connection and statement.
         try {
             conn = dataSource.getConnection();

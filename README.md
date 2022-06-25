@@ -24,7 +24,7 @@ Exodus' aim is not to compete with incumbent migration runners on number of feat
     <artifactId>exodus</artifactId>
     <version>1.0.0</version>
     <scope>system</scope>
-    <systemPath>${basedir}/src/main/resources/lib/exodus-1.0.0.jar</systemPath>
+    <systemPath>${basedir}/src/main/resources/lib/exodus-1.0.1.jar</systemPath>
 </dependency>
 ```
 3. Using the [sample application entrypoint](docs/SampleApplicationEntrypoint.java) as a guide, do the following:
