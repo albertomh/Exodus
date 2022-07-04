@@ -19,6 +19,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.ResourcePatternResolver;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 
+import com.albertomh.exodus.event.MigrationCompleteEventPublisher;
 import com.albertomh.exodus.util.DatabaseUtils;
 
 @Component
@@ -27,9 +28,14 @@ public class MigrationRunner implements ApplicationListener<ContextStartedEvent>
     Logger logger = LoggerFactory.getLogger(MigrationRunner.class);
 
     private DataSource dataSource;
+    private MigrationCompleteEventPublisher migrationCompleteEventPublisher;
 
-    public MigrationRunner(DataSource dataSource) {
+    public MigrationRunner(
+        DataSource dataSource,
+        MigrationCompleteEventPublisher migrationCompleteEventPublisher
+        ) {
         this.dataSource = dataSource;
+        this.migrationCompleteEventPublisher = migrationCompleteEventPublisher;
     }
 
     /**
@@ -132,10 +138,12 @@ public class MigrationRunner implements ApplicationListener<ContextStartedEvent>
             String newMigPhrase = newMigrationsCount == 1
                 ? "new migration"
                 : "new migrations";
-            logger.info(String.format("exodus - Ignored [%d] %s. Applied [%d] %s.",
+            String message = String.format("Ignored [%d] %s. Applied [%d] %s.",
                 existingMigrationsCount, existingMigPhrase,
-                newMigrationsCount, newMigPhrase));
-            conn.close();
+                newMigrationsCount, newMigPhrase);
+            logger.info(String.format("exodus - %s", message));
+
+            migrationCompleteEventPublisher.publishMigrationCompleteEvent(message);
 
         } catch (SQLException e) {
             logger.error(e.getMessage());
