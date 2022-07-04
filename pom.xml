@@ -9,7 +9,7 @@
 
     <groupId>com.albertomh</groupId>
     <artifactId>exodus</artifactId>
-    <version>1.0.1</version>
+    <version>1.1.0</version>
     <name>${project.groupId}:${project.artifactId}</name>
     <description>Lightweight drop-in migrations for Spring.</description>
     <url>https://github.com/albertomh/Exodus</url>
@@ -18,6 +18,8 @@
         <java.version>17</java.version>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
+        <!-- Dependency version numbers. -->
+        <spring.version>2.7.1</spring.version>
     </properties>
 
     <licenses>
@@ -42,13 +44,13 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
-            <version>2.6.7</version>
+            <version>${spring.version}</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
-            <version>2.6.7</version>
+            <version>${spring.version}</version>
             <scope>compile</scope>
         </dependency>
 
@@ -58,10 +60,13 @@
             <version>2.1.212</version>
             <scope>test</scope>
         </dependency>
+        <!--
+            Test dependencies. ─────────────────────────────────────────────────
+        -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
-            <version>2.6.7</version>
+            <version>${spring.version}</version>
             <scope>test</scope>
             <exclusions>
                 <exclusion>
@@ -69,6 +74,12 @@
                     <artifactId>junit-vintage-engine</artifactId>
                 </exclusion>
             </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-inline</artifactId>
+            <version>4.6.1</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 

@@ -109,11 +109,14 @@ public class DatabaseUtilsTest {
             Statement statement = conn.createStatement();
         ) {
             TestingUtils.createSchemaMigrationTable(statement);
-            assertEquals(1, DatabaseUtils.countTables(statement));
-            assertEquals(0, DatabaseUtils.listAppliedMigrations(statement).size());
+            Integer initialTableCount = DatabaseUtils.countTables(statement);
+            Integer initialAppliedMigrations = DatabaseUtils.listAppliedMigrations(statement).size();
 
             Resource migrationFile = new ClassPathResource("db/migration/test_migration.sql");
             DatabaseUtils.applyMigration(dataSource, migrationFile);
+
+            assertEquals(1, initialTableCount);
+            assertEquals(0, initialAppliedMigrations);
             assertEquals(2, DatabaseUtils.countTables(statement));
             assertEquals(1, DatabaseUtils.listAppliedMigrations(statement).size());
         } catch (SQLException e) {
