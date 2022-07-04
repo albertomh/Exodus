@@ -66,9 +66,14 @@ After every run Exodus will log to the console a summary of operations taken:
 After every run Exodus will publish a custom Spring event, the `MigrationCompleteEvent`.  
 You can listen for this event in order to execute code after all migrations have been applied. Have your class implement `ApplicationListener<MigrationCompleteEvent>`, overriding the `onApplicationEvent` method: 
 ```
-@Override
-public void onApplicationEvent(MigrationCompleteEvent event) {
-    // Your logic here.
+import org.springframework.context.ApplicationListener;
+import com.albertomh.exodus.event.MigrationCompleteEvent;
+
+public class MyComponent implements ApplicationListener<MigrationCompleteEvent> {
+    @Override
+    public void onApplicationEvent(MigrationCompleteEvent event) {
+        // Your logic here.
+    }
 }
 ```
 
