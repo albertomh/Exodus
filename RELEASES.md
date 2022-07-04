@@ -1,3 +1,8 @@
+### 1.1.0
+2022-07-03
+- Emit a custom Spring Event (`MigrationCompleteEvent`) when Exodus succesfully completes a run.
+- Improve management of database connections & statements by using `try-with-resources` statements. 
+
 ### 1.0.1
 2022-06-25
 - Make `MigrationRunner` public to allow use in application tests.

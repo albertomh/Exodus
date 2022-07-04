@@ -9,7 +9,7 @@
     <img id="badge--spring" src="https://img.shields.io/badge/Spring-5%2B-6db33f" alt="test coverage" />
     <img id="badge--tests" src="https://img.shields.io/badge/tests-100%25%20%E2%9C%94-brightgreen" alt="test coverage" />
     <img id="badge--size" src="https://img.shields.io/badge/JAR%20size-~7%20kb-blueviolet" alt="size" />
-    <img id="badge--version" src="https://img.shields.io/badge/version-1.0.1-white" alt="version" />
+    <img id="badge--version" src="https://img.shields.io/badge/version-1.1.0-white" alt="version" />
 </p>
 
 Exodus' aim is not to compete with incumbent migration runners on number of features, but rather to remove bloat and offer a simple solution to migrations in Spring applications.
@@ -22,9 +22,9 @@ Exodus' aim is not to compete with incumbent migration runners on number of feat
 <dependency>
     <groupId>com.albertomh</groupId>
     <artifactId>exodus</artifactId>
-    <version>1.0.0</version>
+    <version>1.1.0</version>
     <scope>system</scope>
-    <systemPath>${basedir}/src/main/resources/lib/exodus-1.0.1.jar</systemPath>
+    <systemPath>${basedir}/src/main/resources/lib/exodus-1.1.0.jar</systemPath>
 </dependency>
 ```
 3. Using the [sample application entrypoint](docs/SampleApplicationEntrypoint.java) as a guide, do the following:
@@ -62,6 +62,15 @@ After every run Exodus will log to the console a summary of operations taken:
 | exodus - Ignored [5] existing migrations. Applied [2] new migrations.
 ```
 
+### The `MigrationCompleteEvent` event
+After every run Exodus will publish a custom Spring event, the `MigrationCompleteEvent`.  
+You can listen for this event in order to execute code after all migrations have been applied. Have your class implement `ApplicationListener<MigrationCompleteEvent>`, overriding the `onApplicationEvent` method: 
+```
+@Override
+public void onApplicationEvent(MigrationCompleteEvent event) {
+    // Your logic here.
+}
+```
 
 ## Develop
 
@@ -72,7 +81,7 @@ JARs should be placed under `dist/` for new releases — avoid doing this manual
 
 ### Test
 Tests are located under `src/test/` and laid out in the way common to Java projects, replicating the file structure of the application source code. 
-Verify any changes you make by running `./mvnw test` (suite of unit & integration tests) from the project root.
+Verify any changes you make by running `./mvnw clean test` (suite of unit & integration tests) from the project root.
 
 
 ### Cut a release
