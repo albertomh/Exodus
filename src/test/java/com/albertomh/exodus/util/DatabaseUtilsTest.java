@@ -25,24 +25,19 @@ import com.albertomh.exodus.TestingUtils;
 public class DatabaseUtilsTest {
 
     DataSource dataSource;
-    Connection conn;
-    Statement statement;
 
     public DatabaseUtilsTest() {
         dataSource = new EmbeddedDatabaseBuilder().setType(EmbeddedDatabaseType.H2).build();
-        try {
-            conn = dataSource.getConnection();
-            statement = conn.createStatement();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
     }
 
     // ───── Test lifecycle ────────────────────────────────────────────────────
 
     @BeforeEach
     private void beforeEach() {
-        try {
+        try (
+            Connection conn = dataSource.getConnection();
+            Statement statement = conn.createStatement();
+        ) {
             statement.execute("DROP ALL OBJECTS;");
         } catch (SQLException e) {
             e.printStackTrace();
@@ -53,42 +48,77 @@ public class DatabaseUtilsTest {
 
     @Test
     public void testCountTablesWithEmptyDB() {
-        assertEquals(0, DatabaseUtils.countTables(statement));
+        try (
+            Connection conn = dataSource.getConnection();
+            Statement statement = conn.createStatement();
+        ) {
+            assertEquals(0, DatabaseUtils.countTables(statement));
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     @Test
     public void testCountTablesWithOneTable() {
-        TestingUtils.createSchemaMigrationTable(statement);
+        try (
+            Connection conn = dataSource.getConnection();
+            Statement statement = conn.createStatement();
+        ) {
+            TestingUtils.createSchemaMigrationTable(statement);
 
-        assertEquals(1, DatabaseUtils.countTables(statement));
+            assertEquals(1, DatabaseUtils.countTables(statement));
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     @Test
     public void testlistAppliedMigrationsForEmptyDB() {
-        TestingUtils.createSchemaMigrationTable(statement);
+        try (
+            Connection conn = dataSource.getConnection();
+            Statement statement = conn.createStatement();
+        ) {
+            TestingUtils.createSchemaMigrationTable(statement);
 
-        assertEquals(0, DatabaseUtils.listAppliedMigrations(statement).size());
+            assertEquals(0, DatabaseUtils.listAppliedMigrations(statement).size());
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     @Test
     public void testlistAppliedMigrationsAfterMigrationsRun() {
-        TestingUtils.createSchemaMigrationTable(statement);
-        TestingUtils.addRowToSchemaMigrationTable(statement);
-        TestingUtils.addRowToSchemaMigrationTable(statement);
+        try (
+            Connection conn = dataSource.getConnection();
+            Statement statement = conn.createStatement();
+        ) {
+            TestingUtils.createSchemaMigrationTable(statement);
+            TestingUtils.addRowToSchemaMigrationTable(statement);
+            TestingUtils.addRowToSchemaMigrationTable(statement);
 
-        assertEquals(2, DatabaseUtils.listAppliedMigrations(statement).size());
+            assertEquals(2, DatabaseUtils.listAppliedMigrations(statement).size());
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     @Test
     public void testApplyMigration() {
-        TestingUtils.createSchemaMigrationTable(statement);
-        assertEquals(1, DatabaseUtils.countTables(statement));
-        assertEquals(0, DatabaseUtils.listAppliedMigrations(statement).size());
+        try (
+            Connection conn = dataSource.getConnection();
+            Statement statement = conn.createStatement();
+        ) {
+            TestingUtils.createSchemaMigrationTable(statement);
+            assertEquals(1, DatabaseUtils.countTables(statement));
+            assertEquals(0, DatabaseUtils.listAppliedMigrations(statement).size());
 
-        Resource migrationFile = new ClassPathResource("db/migration/test_migration.sql");
-        DatabaseUtils.applyMigration(conn, statement, migrationFile);
-        assertEquals(2, DatabaseUtils.countTables(statement));
-        assertEquals(1, DatabaseUtils.listAppliedMigrations(statement).size());
+            Resource migrationFile = new ClassPathResource("db/migration/test_migration.sql");
+            DatabaseUtils.applyMigration(dataSource, migrationFile);
+            assertEquals(2, DatabaseUtils.countTables(statement));
+            assertEquals(1, DatabaseUtils.listAppliedMigrations(statement).size());
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
 }

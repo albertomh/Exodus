@@ -4,6 +4,9 @@
 package com.albertomh.exodus.util;
 
 import java.util.ArrayList;
+
+import javax.sql.DataSource;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -74,11 +77,13 @@ public final class DatabaseUtils {
     /**
      * Apply the given migration, recording this in `_schema_migration`.
      *
-     * @param conn
-     * @param statement
+     * @param dataSource
      * @param script The migration SQL script to apply.
      */
-    public static void applyMigration(Connection conn, Statement statement, Resource script) {
+    public static void applyMigration(
+        DataSource dataSource,
+        Resource script
+        ) {
         // Generate an MD5 digest to uniquely identify each migration script.
         String scriptDigest = "";
         try {
@@ -90,7 +95,10 @@ public final class DatabaseUtils {
         }
 
         // Apply the migration script and update `_schema_migration`.
-        try {
+        try (
+            Connection conn = dataSource.getConnection();
+            Statement statement = conn.createStatement();
+        ) {
             ScriptUtils.executeSqlScript(conn, script);
 
             String updateSQL = "INSERT INTO _schema_migration(file_name, checksum) "

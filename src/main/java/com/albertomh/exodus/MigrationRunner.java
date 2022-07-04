@@ -26,17 +26,10 @@ public class MigrationRunner implements ApplicationListener<ContextStartedEvent>
 
     Logger logger = LoggerFactory.getLogger(MigrationRunner.class);
 
-    private Connection conn;
-    private Statement statement;
+    private DataSource dataSource;
 
     public MigrationRunner(DataSource dataSource) {
-        // Initialise database connection and statement.
-        try {
-            conn = dataSource.getConnection();
-            statement = conn.createStatement();
-        } catch (SQLException e) {
-            logger.error(e.getMessage());
-        }
+        this.dataSource = dataSource;
     }
 
     /**
@@ -61,7 +54,10 @@ public class MigrationRunner implements ApplicationListener<ContextStartedEvent>
      * Create the `_schema_migration` table if it does not yet exist.
      */
     public void createSchemaMigrationTable() {
-        try {
+        try (
+            Connection conn = dataSource.getConnection();
+            Statement statement = conn.createStatement();
+        ) {
             String createMigrationsTableSQL = """
                 CREATE TABLE IF NOT EXISTS _schema_migration (
                     id SERIAL PRIMARY KEY,
@@ -85,9 +81,16 @@ public class MigrationRunner implements ApplicationListener<ContextStartedEvent>
     @Override
     public void onApplicationEvent(ContextStartedEvent event) {
         // Initialise the `_schema_migration` table the first time Exodus runs.
-        Integer tableCount = DatabaseUtils.countTables(statement);
-        if (tableCount == 0) {
-            createSchemaMigrationTable();
+        try (
+            Connection conn = dataSource.getConnection();
+            Statement statement = conn.createStatement();
+        ) {
+            Integer tableCount = DatabaseUtils.countTables(statement);
+            if (tableCount == 0) {
+                createSchemaMigrationTable();
+            }
+        } catch (SQLException e) {
+            logger.error(e.getMessage());
         }
 
         Resource[] sqlScripts = getMigrationScripts();
@@ -95,14 +98,22 @@ public class MigrationRunner implements ApplicationListener<ContextStartedEvent>
         // Loop over every SQL script and apply those that have not already been applied.
         Integer existingMigrationsCount = 0;
         Integer newMigrationsCount = 0;
-        if (sqlScripts != null && conn != null && statement != null) {
-            ArrayList<String> appliedMigrations = DatabaseUtils.listAppliedMigrations(statement);
+        if (sqlScripts != null && dataSource != null) {
+            ArrayList<String> appliedMigrations = new ArrayList<>();
+            try (
+                Connection conn = dataSource.getConnection();
+                Statement statement = conn.createStatement();
+            ) {
+                appliedMigrations = DatabaseUtils.listAppliedMigrations(statement);
+            } catch (SQLException e) {
+                logger.error(e.getMessage());
+            }
 
             for (Resource script : sqlScripts) {
                 if (appliedMigrations == null
                     || appliedMigrations.size() == 0
                     || (appliedMigrations.size() > 0 && !appliedMigrations.contains(script.getFilename()))) {
-                    DatabaseUtils.applyMigration(conn, statement, script);
+                    DatabaseUtils.applyMigration(dataSource, script);
                     newMigrationsCount++;
                     logger.info(String.format("exodus - Migration `%s` has been applied.", script.getFilename()));
                 } else {
@@ -111,7 +122,10 @@ public class MigrationRunner implements ApplicationListener<ContextStartedEvent>
             }
         }
 
-        try {
+        try (
+            Connection conn = dataSource.getConnection();
+            Statement statement = conn.createStatement();
+        ) {
             String existingMigPhrase = existingMigrationsCount == 1
                 ? "existing migration"
                 : "existing migrations";
