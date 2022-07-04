@@ -16,6 +16,7 @@ import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.junit.jupiter.api.BeforeEach;
 import static org.junit.jupiter.api.Assertions.*;
+
 import org.springframework.context.event.ContextStartedEvent;
 import org.springframework.context.support.StaticApplicationContext;
 import org.springframework.core.io.Resource;
@@ -27,6 +28,7 @@ import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.read.ListAppender;
 
+import com.albertomh.exodus.event.MigrationCompleteEventPublisher;
 import com.albertomh.exodus.util.DatabaseUtils;
 
 @TestInstance(Lifecycle.PER_CLASS)
@@ -34,20 +36,12 @@ public class MigrationRunnerTest {
 
     MigrationRunner runner;
     private DataSource dataSource;
-    private Connection conn;
-    private Statement statement;
 
     Logger logger = (Logger) LoggerFactory.getLogger(MigrationRunner.class);
     List<ILoggingEvent> logList;
 
     public MigrationRunnerTest() {
         dataSource = new EmbeddedDatabaseBuilder().setType(EmbeddedDatabaseType.H2).build();
-        try {
-            conn = dataSource.getConnection();
-            statement = conn.createStatement();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
     }
 
     // ───── Utilities ─────────────────────────────────────────────────────────
@@ -61,7 +55,10 @@ public class MigrationRunnerTest {
 
     @BeforeEach
     private void beforeEach() {
-        try {
+        try (
+            Connection conn = dataSource.getConnection();
+            Statement statement = conn.createStatement();
+        ) {
             statement.execute("DROP ALL OBJECTS;");
         } catch (SQLException e) {
             e.printStackTrace();
@@ -84,55 +81,79 @@ public class MigrationRunnerTest {
 
     @Test
     public void testCreatingTheSchemaMigrationTable() {
-        runner = new MigrationRunner(dataSource);
+        try (
+            Connection conn = dataSource.getConnection();
+            Statement statement = conn.createStatement();
+        ) {
+            runner = new MigrationRunner(dataSource);
 
-        assertEquals(0, DatabaseUtils.countTables(statement));
-        runner.createSchemaMigrationTable();
-        assertEquals(1, DatabaseUtils.countTables(statement));
-        assertEquals("exodus - Table `_schema_migration` has been created.", logList.get(0).getMessage());
-        assertEquals(Level.INFO, logList.get(0).getLevel());
+            assertEquals(0, DatabaseUtils.countTables(statement));
+            runner.createSchemaMigrationTable();
+            assertEquals(1, DatabaseUtils.countTables(statement));
+            assertEquals("exodus - Table `_schema_migration` has been created.", logList.get(0).getMessage());
+            assertEquals(Level.INFO, logList.get(0).getLevel());
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     @Test
     public void testCSETriggersMigrationsWithBlankDatabase() {
-        runner = new MigrationRunner(dataSource);
+        try (
+            Connection conn = dataSource.getConnection();
+            Statement statement = conn.createStatement();
+        ) {
+            runner = new MigrationRunner(dataSource);
 
-        assertEquals(0, DatabaseUtils.countTables(statement));
-        runner.onApplicationEvent(generateContextStartedEvent());
-        assertEquals(2, DatabaseUtils.countTables(statement));
+            assertEquals(0, DatabaseUtils.countTables(statement));
+            runner.onApplicationEvent(generateContextStartedEvent());
+            assertEquals(2, DatabaseUtils.countTables(statement));
 
-        assertEquals(4, logList.size());
-        assertEquals("exodus - Table `_schema_migration` has been created.", logList.get(0).getMessage());
-        assertEquals("exodus - Migration `already_applied_migration.sql` has been applied.", logList.get(1).getMessage());
-        assertEquals("exodus - Migration `test_migration.sql` has been applied.", logList.get(2).getMessage());
-        assertEquals("exodus - Ignored [0] existing migrations. Applied [2] new migrations.", logList.get(3).getMessage());
+            assertEquals(4, logList.size());
+            assertEquals("exodus - Table `_schema_migration` has been created.", logList.get(0).getMessage());
+            assertEquals("exodus - Migration `already_applied_migration.sql` has been applied.", logList.get(1).getMessage());
+            assertEquals("exodus - Migration `test_migration.sql` has been applied.", logList.get(2).getMessage());
+            assertEquals("exodus - Ignored [0] existing migrations. Applied [2] new migrations.", logList.get(3).getMessage());
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     @Test
     public void testCSETriggersMigrationsWithPopulatedDatabase() {
-        TestingUtils.createSchemaMigrationTable(statement);
-        TestingUtils.addRowToSchemaMigrationTable(statement, "already_applied_migration.sql");
+        try (
+            Connection conn = dataSource.getConnection();
+            Statement statement = conn.createStatement();
+        ) {
+            TestingUtils.createSchemaMigrationTable(statement);
+            TestingUtils.addRowToSchemaMigrationTable(statement, "already_applied_migration.sql");
 
-        runner = new MigrationRunner(dataSource);
+            runner = new MigrationRunner(dataSource);
 
-        assertEquals(1, DatabaseUtils.countTables(statement));
-        runner.onApplicationEvent(generateContextStartedEvent());
-        assertEquals(2, DatabaseUtils.countTables(statement));
+            assertEquals(1, DatabaseUtils.countTables(statement));
+            runner.onApplicationEvent(generateContextStartedEvent());
+            assertEquals(2, DatabaseUtils.countTables(statement));
 
-        assertEquals(2, logList.size());
-        assertEquals("exodus - Migration `test_migration.sql` has been applied.", logList.get(0).getMessage());
-        assertEquals("exodus - Ignored [1] existing migration. Applied [1] new migration.", logList.get(1).getMessage());
+            assertEquals(2, logList.size());
+            assertEquals("exodus - Migration `test_migration.sql` has been applied.", logList.get(0).getMessage());
+            assertEquals("exodus - Ignored [1] existing migration. Applied [1] new migration.", logList.get(1).getMessage());
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     @Test
     public void testMigrationsAreRecordedInMigrationsTable() {
-        TestingUtils.createSchemaMigrationTable(statement);
-        TestingUtils.addRowToSchemaMigrationTable(statement, "already_applied_migration.sql");
+        try (
+            Connection conn = dataSource.getConnection();
+            Statement statement = conn.createStatement();
+        ) {
+            TestingUtils.createSchemaMigrationTable(statement);
+            TestingUtils.addRowToSchemaMigrationTable(statement, "already_applied_migration.sql");
 
-        runner = new MigrationRunner(dataSource);
-        runner.onApplicationEvent(generateContextStartedEvent());
+            runner = new MigrationRunner(dataSource, migrationCompleteEventPublisher);
+            runner.onApplicationEvent(generateContextStartedEvent());
 
-        try {
             ArrayList<String> migrationFilenames = new ArrayList<>();
             ArrayList<String> migrationChecksums = new ArrayList<>();
             ResultSet result = statement.executeQuery("SELECT * FROM _schema_migration;");
