@@ -9,7 +9,7 @@
     <img id="badge--spring" src="https://img.shields.io/badge/Spring-5%2B-6db33f" alt="test coverage" />
     <img id="badge--tests" src="https://img.shields.io/badge/tests-100%25%20%E2%9C%94-brightgreen" alt="test coverage" />
     <img id="badge--size" src="https://img.shields.io/badge/JAR%20size-~7%20kb-blueviolet" alt="size" />
-    <img id="badge--version" src="https://img.shields.io/badge/version-1.1.0-white" alt="version" />
+    <img id="badge--version" src="https://img.shields.io/badge/version-1.2.0-white" alt="version" />
 </p>
 
 Exodus' aim is not to compete with incumbent migration runners on number of features, but rather to remove bloat and offer a simple solution to migrations in Spring applications.
@@ -138,9 +138,7 @@ A suite of tests for the `DatabaseUtils` tools. Unit tests verify simple functio
 
 
 #### Test resources
-Test resources are provided under `src/test/resources/db/migration/`, mimicking their location in a production application using Exodus. Two migrations are provided:
-- `test_migration.sql` a simple script that creates a basic `auth__user` table.
-- `already_applied_migration.sql` an inert migration used to test Exodus' handling of an already-applied migration.
+Test resources are provided under `src/test/resources/db/migration/`, mimicking their location in a production application using Exodus. Two migrations are available to tests under the `1970/` subdirectory.
 
 
 ---

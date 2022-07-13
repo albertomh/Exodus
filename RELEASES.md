@@ -1,3 +1,7 @@
+### 1.2.0
+2022-07-13
+- Improve robustness of `getMigrationScripts()` by ensuring picked up migration files are sorted as expected & using a more appropriate collection data type.
+
 ### 1.1.0
 2022-07-03
 - Emit a custom Spring Event (`MigrationCompleteEvent`) when Exodus succesfully completes a run.
