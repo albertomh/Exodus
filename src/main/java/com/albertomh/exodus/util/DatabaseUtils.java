@@ -7,9 +7,8 @@ import java.util.ArrayList;
 
 import javax.sql.DataSource;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
+import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.Statement;
 import java.sql.ResultSet;
@@ -87,8 +86,8 @@ public final class DatabaseUtils {
         // Generate an MD5 digest to uniquely identify each migration script.
         String scriptDigest = "";
         try {
-            File file = script.getFile();
-            byte[] scriptBytes = Files.readAllBytes(file.toPath());
+            InputStream fileStream = script.getInputStream();
+            byte[] scriptBytes = fileStream.readAllBytes();
             scriptDigest = DigestUtils.md5DigestAsHex(scriptBytes).toUpperCase();
         } catch (IOException e) {
             e.printStackTrace();

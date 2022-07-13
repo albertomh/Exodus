@@ -4,6 +4,10 @@
 package com.albertomh.exodus;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.Statement;
@@ -39,16 +43,19 @@ public class MigrationRunner implements ApplicationListener<ContextStartedEvent>
     }
 
     /**
-     * Fetch all SQL scripts under `/db/migration/`.
+     * Fetch all SQL scripts under `/db/migration/` and sort by filename.
      *
      * @return An array of Resources, each of them a script.
      */
-    public static Resource[] getMigrationScripts() {
-        Resource[] sqlScripts = null;
+    public static List<Resource> getMigrationScripts() {
+        List<Resource> sqlScripts = new ArrayList<>();
         try {
             ClassLoader cl = MigrationRunner.class.getClassLoader();
             ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver(cl);
-            sqlScripts = resolver.getResources("classpath:/db/migration/**/*.sql");
+
+            sqlScripts = Arrays.asList(resolver.getResources("classpath:/db/migration/**/*.sql"));
+            Collections.sort(sqlScripts, Comparator.comparing(Resource::getFilename));
+
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -99,7 +106,7 @@ public class MigrationRunner implements ApplicationListener<ContextStartedEvent>
             logger.error(e.getMessage());
         }
 
-        Resource[] sqlScripts = getMigrationScripts();
+        List<Resource> sqlScripts = getMigrationScripts();
 
         // Loop over every SQL script and apply those that have not already been applied.
         Integer existingMigrationsCount = 0;
