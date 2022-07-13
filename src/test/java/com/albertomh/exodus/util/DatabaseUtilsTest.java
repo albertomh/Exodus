@@ -112,7 +112,7 @@ public class DatabaseUtilsTest {
             Integer initialTableCount = DatabaseUtils.countTables(statement);
             Integer initialAppliedMigrations = DatabaseUtils.listAppliedMigrations(statement).size();
 
-            Resource migrationFile = new ClassPathResource("db/migration/test_migration.sql");
+            Resource migrationFile = new ClassPathResource("db/migration/1970/1970-01-01_09.00__auth__create-user.sql");
             DatabaseUtils.applyMigration(dataSource, migrationFile);
 
             assertEquals(1, initialTableCount);

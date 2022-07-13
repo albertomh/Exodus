@@ -4,6 +4,7 @@
 package com.albertomh.exodus;
 
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.ArrayList;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -81,8 +82,11 @@ public class MigrationRunnerTest {
 
     @Test
     public void testGetMigrationScripts() {
-        Resource[] sqlScripts = MigrationRunner.getMigrationScripts();
-        assertEquals(2, sqlScripts.length);
+        List<Resource> sqlScripts = MigrationRunner.getMigrationScripts();
+
+        List<String> filenames = sqlScripts.stream().map(s -> s.getFilename()).collect(Collectors.toList());
+        assertEquals("1970-01-01_09.00__auth__create-user.sql, 1970-02-01_10.00__email__create-email.sql", String.join(", ", filenames));
+        assertEquals(2, sqlScripts.size());
     }
 
     @Test
@@ -115,11 +119,11 @@ public class MigrationRunnerTest {
             runner.onApplicationEvent(generateContextStartedEvent());
 
             assertEquals(0, initialTableCount);
-            assertEquals(2, DatabaseUtils.countTables(statement));
+            assertEquals(3, DatabaseUtils.countTables(statement));
             assertEquals(4, logList.size());
             assertEquals("exodus - Table `_schema_migration` has been created.", logList.get(0).getMessage());
-            assertEquals("exodus - Migration `already_applied_migration.sql` has been applied.", logList.get(1).getMessage());
-            assertEquals("exodus - Migration `test_migration.sql` has been applied.", logList.get(2).getMessage());
+            assertEquals("exodus - Migration `1970-01-01_09.00__auth__create-user.sql` has been applied.", logList.get(1).getMessage());
+            assertEquals("exodus - Migration `1970-02-01_10.00__email__create-email.sql` has been applied.", logList.get(2).getMessage());
             String message = "Ignored [0] existing migrations. Applied [2] new migrations.";
             assertEquals(String.format("exodus - %s", message), logList.get(3).getMessage());
             verify(migrationCompleteEventPublisher).publishMigrationCompleteEvent(message);
@@ -135,7 +139,7 @@ public class MigrationRunnerTest {
             Statement statement = conn.createStatement();
         ) {
             TestingUtils.createSchemaMigrationTable(statement);
-            TestingUtils.addRowToSchemaMigrationTable(statement, "already_applied_migration.sql");
+            TestingUtils.addRowToSchemaMigrationTable(statement, "1970-01-01_09.00__auth__create-user.sql");
             Integer initialTableCount = DatabaseUtils.countTables(statement);
 
             runner.onApplicationEvent(generateContextStartedEvent());
@@ -143,7 +147,7 @@ public class MigrationRunnerTest {
             assertEquals(1, initialTableCount);
             assertEquals(2, DatabaseUtils.countTables(statement));
             assertEquals(2, logList.size());
-            assertEquals("exodus - Migration `test_migration.sql` has been applied.", logList.get(0).getMessage());
+            assertEquals("exodus - Migration `1970-02-01_10.00__email__create-email.sql` has been applied.", logList.get(0).getMessage());
             String message = "Ignored [1] existing migration. Applied [1] new migration.";
             assertEquals(String.format("exodus - %s", message), logList.get(1).getMessage());
             verify(migrationCompleteEventPublisher).publishMigrationCompleteEvent(message);
@@ -159,7 +163,6 @@ public class MigrationRunnerTest {
             Statement statement = conn.createStatement();
         ) {
             TestingUtils.createSchemaMigrationTable(statement);
-            TestingUtils.addRowToSchemaMigrationTable(statement, "already_applied_migration.sql");
 
             runner.onApplicationEvent(generateContextStartedEvent());
 
@@ -170,8 +173,8 @@ public class MigrationRunnerTest {
                 migrationFilenames.add(result.getString("file_name"));
                 migrationChecksums.add(result.getString("checksum"));
             }
-            assertEquals("already_applied_migration.sql, test_migration.sql", String.join(", ", migrationFilenames));
-            assertEquals("BD0E7FC9C02332B837AB1E0877A959A3", migrationChecksums.get(1));
+            assertEquals("1970-01-01_09.00__auth__create-user.sql, 1970-02-01_10.00__email__create-email.sql", String.join(", ", migrationFilenames));
+            assertEquals("F7CAE56B9AD4136BE9530CB25979F397", migrationChecksums.get(1));
         } catch (SQLException e) {
             logger.error(e.getMessage());
         }
